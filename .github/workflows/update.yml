@@ -1,0 +1,28 @@
+name: Update Gallery Data
+on:
+  push:
+    paths:
+      - '**.png' # Sadece resim yüklendiğinde çalışır
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/set-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Generate JSON
+        run: python generate_data.py
+
+      - name: Commit and Push
+        run:
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add data.json
+          git commit -m "Automated data.json update" || exit 0
+          git push
