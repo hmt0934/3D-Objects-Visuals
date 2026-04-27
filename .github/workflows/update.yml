@@ -5,17 +5,25 @@ on:
       - main
   workflow_dispatch:
 
+# Actions'ın depoya yazma izni almasını sağlar
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Node.js uyarısını giderir
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Tüm geçmişi çekerek çakışmaları önler
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Generate JSON
         run: python generate_data.py
@@ -24,6 +32,8 @@ jobs:
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+          git config --global core.quotepath false # Türkçe karakterli yolları düzeltir
           git add data.json
+          # Eğer değişiklik yoksa hata vermeden devam etmesini sağlar
           git commit -m "Automated data.json update" || exit 0
           git push
