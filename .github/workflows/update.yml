@@ -1,8 +1,9 @@
 name: Update Gallery Data
 on:
   push:
-    paths:
-      - '**.png' # Sadece resim yüklendiğinde çalışır
+    branches:
+      - main  # Main branch'ine yapılan her push'ta çalışır
+  workflow_dispatch: # Bu satır "Run workflow" butonunu ekler (Manuel çalıştırma)
 
 jobs:
   build:
@@ -20,7 +21,7 @@ jobs:
         run: python generate_data.py
 
       - name: Commit and Push
-        run:
+        run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add data.json
